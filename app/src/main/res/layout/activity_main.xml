@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mainLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F3F4F6"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="SMART GESTURE CONTROL"
+            android:textAlignment="center"
+            android:textColor="#3F51B5"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="24dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:elevation="4dp"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1. Chỉnh Âm Lượng (Nghiêng máy)"
+                android:textStyle="bold"
+                android:textSize="18sp"/>
+
+            <TextView
+                android:id="@+id/tvVolume"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Âm lượng hiện tại: 50%"
+                android:layout_marginTop="8dp"
+                android:textSize="16sp"/>
+
+            <ProgressBar
+                android:id="@+id/progressVolume"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="100"
+                android:progress="50"
+                android:layout_marginTop="8dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:elevation="4dp"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2. Bật/Tắt Đèn (Vẫy tay)"
+                android:textStyle="bold"
+                android:textSize="18sp"/>
+
+            <Switch
+                android:id="@+id/switchWaveSensor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Kích hoạt cảm biến vẫy tay"
+                android:layout_marginTop="8dp"
+                android:textSize="16sp"/>
+
+            <TextView
+                android:id="@+id/tvLightStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Trạng thái đèn: TẮT"
+                android:textColor="#F44336"
+                android:layout_marginTop="8dp"
+                android:textStyle="bold"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:elevation="4dp"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="3. Media Control (Xoay máy trái/phải)"
+                android:textStyle="bold"
+                android:textSize="18sp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="🎵 Đang phát: Nhạc hệ thống..."
+                android:textSize="16sp"
+                android:layout_marginTop="8dp"
+                android:textStyle="italic"
+                android:textAlignment="center"/>
+
+            <TextView
+                android:id="@+id/tvMediaAction"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Xoay máy để chuyển bài"
+                android:layout_marginTop="8dp"
+                android:textAlignment="center"
+                android:textColor="#4CAF50"
+                android:textStyle="bold"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:elevation="4dp"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="4. Điều khiển IoT (Loa Bluetooth)"
+                android:textStyle="bold"
+                android:textSize="18sp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Kết nối với Loa/Tai nghe Bluetooth để xuất âm thanh."
+                android:textSize="14sp"
+                android:layout_marginTop="8dp"/>
+
+            <Button
+                android:id="@+id/btnConnectBluetooth"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Mở kết nối Loa Bluetooth"
+                android:layout_marginTop="12dp"
+                android:backgroundTint="#2196F3"/>
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>
