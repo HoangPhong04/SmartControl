@@ -1,7 +1,7 @@
 # 📱 Smart Gesture Control (IoT & Sensors)
 
-> **Bài tập 3 - Môn Mobile Nâng Cao 2026** > **Sinh viên thực hiện:** [Tên của bạn]  
-> **Mã sinh viên:** [Mã SV của bạn]
+> **Bài tập 3 - Môn Mobile Nâng Cao 2026** > **Sinh viên thực hiện:** Nguyễn Hoàng Ngọc Phong
+> **Mã sinh viên:** 3122410310
 
 Ứng dụng Android sử dụng các cảm biến phần cứng (Hardware Sensors) để nhận diện cử chỉ tay, từ đó mô phỏng việc điều khiển các thiết bị trong Nhà thông minh (Smart Home) mà không cần chạm trực tiếp vào màn hình.
 
