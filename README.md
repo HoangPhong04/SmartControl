@@ -29,7 +29,7 @@
 Dự án áp dụng kiến trúc tách biệt rõ ràng giữa logic Cảm biến (Hardware) và Giao diện (UI):
 
 ```text
-app/src/main/java/com/yourname/smartgesturecontrol/
+app/src/main/java/com/example/smartgesturecontrol/
 │
 ├── sensors/                      
 │   ├── GestureListener.kt        # Interface định nghĩa hợp đồng cho 5 cử chỉ (Wave, Rotate, Tilt, FaceDown, Shake)
