@@ -24,6 +24,9 @@ import com.example.smartcontrol.R
 import com.example.smartcontrol.sensors.GestureListener
 import com.example.smartcontrol.sensors.GestureSensorManager
 import kotlin.random.nextInt
+import android.content.BroadcastReceiver
+import android.content.IntentFilter
+import androidx.core.content.ContextCompat
 
 class MainActivity : AppCompatActivity(), GestureListener, TextToSpeech.OnInitListener{
 
@@ -42,6 +45,9 @@ class MainActivity : AppCompatActivity(), GestureListener, TextToSpeech.OnInitLi
 
     private lateinit var tts: TextToSpeech
 
+    private lateinit var tvSongName: TextView
+    private lateinit var btnPlayPause: Button
+
     // Trạng thái
     private var isLightOn = false
     private var lastVolume = -1
@@ -57,6 +63,8 @@ class MainActivity : AppCompatActivity(), GestureListener, TextToSpeech.OnInitLi
         switchWaveSensor = findViewById(R.id.switchWaveSensor)
         tvLightStatus = findViewById(R.id.tvLightStatus)
         tvMediaAction = findViewById(R.id.tvMediaAction)
+        tvSongName = findViewById(R.id.tvSongName)
+        btnPlayPause = findViewById(R.id.btnPlayPause)
         btnConnectBluetooth = findViewById(R.id.btnConnectBluetooth)
 
         // Khởi tạo Services
@@ -76,10 +84,14 @@ class MainActivity : AppCompatActivity(), GestureListener, TextToSpeech.OnInitLi
             val statusMsg = if (isChecked) "Đã BẬT nhận diện vẫy tay" else "Đã TẮT nhận diện vẫy tay"
             Toast.makeText(this, statusMsg, Toast.LENGTH_SHORT).show()
         }
+        // play
+        btnPlayPause.setOnClickListener {
+            sendMediaCommand(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE)
+            Toast.makeText(this, "Đã gửi lệnh Phát/Tạm dừng", Toast.LENGTH_SHORT).show()
+        }
 
         // Nút mở kết nối Bluetooth IoT (Phần 4)
         btnConnectBluetooth.setOnClickListener {
-            // Mở màn hình cài đặt Bluetooth của điện thoại để kết nối Loa/IoT
             val intent = Intent(Settings.ACTION_BLUETOOTH_SETTINGS)
             startActivity(intent)
         }
@@ -89,6 +101,20 @@ class MainActivity : AppCompatActivity(), GestureListener, TextToSpeech.OnInitLi
     override fun onResume() {
         super.onResume()
         gestureSensorManager.startListening()
+
+        val filter = IntentFilter().apply {
+            addAction("com.android.music.metachanged")
+            addAction("com.android.music.playstatechanged")
+            addAction("com.spotify.music.metadatachanged")
+            addAction("com.soundcloud.android.metachanged")
+            addAction("com.soundcloud.android.playback.playstatechanged")
+        }
+        ContextCompat.registerReceiver(
+            this,
+            musicReceiver,
+            filter,
+            ContextCompat.RECEIVER_EXPORTED
+        )
     }
 
     override fun onPause() {
@@ -96,6 +122,8 @@ class MainActivity : AppCompatActivity(), GestureListener, TextToSpeech.OnInitLi
         gestureSensorManager.stopListening()
         // Tắt đèn khi thoát app để an toàn
         if (isLightOn) toggleFlashlight(false)
+
+        unregisterReceiver(musicReceiver)
     }
 
     // ==========================================
@@ -111,12 +139,10 @@ class MainActivity : AppCompatActivity(), GestureListener, TextToSpeech.OnInitLi
                 if (isLightOn) {
                     tvLightStatus.text = "Trạng thái đèn: ĐANG SÁNG"
                     tvLightStatus.setTextColor(Color.parseColor("#4CAF50"))
-                    // Đọc giọng nói
                     tts.speak("Đèn đã bật", TextToSpeech.QUEUE_FLUSH, null, null)
                 } else {
                     tvLightStatus.text = "Trạng thái đèn: TẮT"
                     tvLightStatus.setTextColor(Color.parseColor("#F44336"))
-                    // Đọc giọng nói
                     tts.speak("Đèn đã tắt", TextToSpeech.QUEUE_FLUSH, null, null)
                 }
             }
@@ -125,32 +151,29 @@ class MainActivity : AppCompatActivity(), GestureListener, TextToSpeech.OnInitLi
 
     override fun onRotateLeft() {
         // Gửi lệnh lùi bài
-        val event = KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PREVIOUS)
-        audioManager.dispatchMediaKeyEvent(event)
+        sendMediaCommand(KeyEvent.KEYCODE_MEDIA_PREVIOUS)
 
-        // Cập nhật giao diện Phần 3
+
         runOnUiThread { tvMediaAction.text = "⏪ Đã chuyển về bài TRƯỚC" }
     }
 
     override fun onRotateRight() {
         // Gửi lệnh qua bài
-        val event = KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_NEXT)
-        audioManager.dispatchMediaKeyEvent(event)
+        sendMediaCommand(KeyEvent.KEYCODE_MEDIA_NEXT)
 
-        // Cập nhật giao diện Phần 3
+
         runOnUiThread { tvMediaAction.text = "⏩ Đã chuyển sang bài TIẾP THEO" }
     }
 
     override fun onTilt(volumeLevel: Int) {
-        if (Math.abs(volumeLevel - lastVolume) > 3) { // Chênh lệch 3% thì mới đổi UI
+        if (Math.abs(volumeLevel - lastVolume) > 3) {
             lastVolume = volumeLevel
 
-            // Tính toán và chỉnh âm lượng thật
             val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
             val targetVolume = (volumeLevel / 100f * maxVolume).toInt()
-            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, targetVolume, 0) // Để 0 để ẩn UI hệ thống, dùng UI của mình
 
-            // Cập nhật giao diện Phần 1
+            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, targetVolume, 0)
+
             runOnUiThread {
                 tvVolume.text = "Âm lượng hiện tại: $volumeLevel%"
                 progressVolume.progress = volumeLevel
@@ -180,8 +203,7 @@ class MainActivity : AppCompatActivity(), GestureListener, TextToSpeech.OnInitLi
         val event = KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE)
         audioManager.dispatchMediaKeyEvent(event)
 
-        // 3. Đọc thông báo
-        tts.speak("Chế độ đi ngủ. Đã tắt toàn bộ thiết bị", TextToSpeech.QUEUE_FLUSH, null, null)
+        tts.speak("Chế độ đi ngủ. Đã tắt toàn bộ chức năng", TextToSpeech.QUEUE_FLUSH, null, null)
 
         runOnUiThread { tvMediaAction.text = "💤 Chế độ đi ngủ: Đã úp máy" }
     }
@@ -199,7 +221,7 @@ class MainActivity : AppCompatActivity(), GestureListener, TextToSpeech.OnInitLi
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             vibrator.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE))
         } else {
-            vibrator.vibrate(200) // Cho máy Android cũ
+            vibrator.vibrate(200)
         }
 
         tts.speak("Đã đổi màu ứng dụng sang màu ngẫu nhiên", TextToSpeech.QUEUE_FLUSH, null, null)
@@ -217,5 +239,26 @@ class MainActivity : AppCompatActivity(), GestureListener, TextToSpeech.OnInitLi
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+
+    private val musicReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            val track = intent?.getStringExtra("track") ?: intent?.getStringExtra("title")
+            val artist = intent?.getStringExtra("artist") ?: "Không rõ ca sĩ"
+
+
+            if (track != null) {
+                tvSongName.text = "🎵 $track \n🎤 $artist"
+            }
+        }
+    }
+
+    private fun sendMediaCommand(keyCode: Int) {
+        val eventDown = KeyEvent(KeyEvent.ACTION_DOWN, keyCode)
+        audioManager.dispatchMediaKeyEvent(eventDown)
+
+        val eventUp = KeyEvent(KeyEvent.ACTION_UP, keyCode)
+        audioManager.dispatchMediaKeyEvent(eventUp)
     }
 }

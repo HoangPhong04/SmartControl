@@ -101,28 +101,39 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="3. Media Control (Xoay máy trái/phải)"
+                android:text="3. Media Control (Music Player)"
                 android:textStyle="bold"
                 android:textSize="18sp"/>
 
             <TextView
+                android:id="@+id/tvSongName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="🎵 Đang phát: Nhạc hệ thống..."
+                android:text="🎵 Đang chờ mở nhạc..."
                 android:textSize="16sp"
-                android:layout_marginTop="8dp"
-                android:textStyle="italic"
+                android:layout_marginTop="12dp"
+                android:textColor="#2196F3"
+                android:textStyle="bold"
                 android:textAlignment="center"/>
+
+            <Button
+                android:id="@+id/btnPlayPause"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⏯ PHÁT / TẠM DỪNG"
+                android:layout_gravity="center"
+                android:layout_marginTop="12dp"
+                android:backgroundTint="#FF9800"/>
 
             <TextView
                 android:id="@+id/tvMediaAction"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Xoay máy để chuyển bài"
-                android:layout_marginTop="8dp"
+                android:text="(Xoay cổ tay trái/phải để chuyển bài)"
+                android:layout_marginTop="12dp"
                 android:textAlignment="center"
                 android:textColor="#4CAF50"
-                android:textStyle="bold"/>
+                android:textStyle="italic"/>
         </LinearLayout>
 
         <LinearLayout

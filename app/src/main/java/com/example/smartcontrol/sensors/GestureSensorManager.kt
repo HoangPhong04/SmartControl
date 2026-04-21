@@ -19,12 +19,12 @@ class GestureSensorManager(context: Context, private val listener: GestureListen
 
     private var sensorManager: SensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
-    // Khai báo 3 loại cảm biến
-    private var accelerometer: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
-    private var gyroscope: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
-    private var proximitySensor: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY)
 
-    // Các biến phục vụ thuật toán
+    private var accelerometer: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) // gia tốc kế
+    private var gyroscope: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE) // con quay
+    private var proximitySensor: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY) // tiệm cận
+
+
     private val ROTATE_THRESHOLD = 4.0f
     private var lastRotateTime: Long = 0
     private var lastProximityTime: Long = 0
@@ -46,10 +46,10 @@ class GestureSensorManager(context: Context, private val listener: GestureListen
         val currentTime = System.currentTimeMillis()
 
         when (event.sensor.type) {
-            // 1. CẢM BIẾN TIỆM CẬN (Vẫy tay qua mặt trước điện thoại)
+
             Sensor.TYPE_PROXIMITY -> {
                 val distance = event.values[0]
-                // Nếu khoảng cách < 3cm (Nghĩa là có bàn tay che ngang qua camera trước)
+
                 if (distance < 3.0f) {
                     if (currentTime - lastProximityTime > COOLDOWN_TIME_MS) {
                         listener.onHandWaveOverScreen()
@@ -58,12 +58,12 @@ class GestureSensorManager(context: Context, private val listener: GestureListen
                 }
             }
 
-            // 2. GIA TỐC KẾ (Tính góc nghiêng cho âm lượng)
+
             Sensor.TYPE_ACCELEROMETER -> {
                 val x = event.values[0]
                 val y = event.values[1]
                 val z = event.values[2]
-                var tiltNormalized = (x + 9.8f) / (9.8f * 2)
+                var tiltNormalized = (-x + 9.8f) / (9.8f * 2)
                 if (tiltNormalized < 0f) tiltNormalized = 0f
                 if (tiltNormalized > 1f) tiltNormalized = 1f
                 val volumeLevel = (tiltNormalized * 100).toInt()
@@ -83,9 +83,8 @@ class GestureSensorManager(context: Context, private val listener: GestureListen
                 val gZ = z / 9.8f
                 val gForce = Math.sqrt((gX * gX + gY * gY + gZ * gZ).toDouble()).toFloat()
 
-                // Nếu lực lắc mạnh hơn 2.0 G (Gấp đôi trọng lực bình thường)
+
                 if (gForce > 2.0f) {
-                    // Dùng chung thời gian chờ 1 giây để tránh nhận diện liên tục
                     if (currentTime - lastProximityTime > COOLDOWN_TIME_MS) {
                         listener.onShake()
                         lastProximityTime = currentTime
@@ -93,12 +92,11 @@ class GestureSensorManager(context: Context, private val listener: GestureListen
                 }
             }
 
-            // 3. CON QUAY HỒI CHUYỂN (Xoay máy)
             Sensor.TYPE_GYROSCOPE -> {
                 val y = event.values[1]
                 if (abs(y) > ROTATE_THRESHOLD) {
                     if (currentTime - lastRotateTime > COOLDOWN_TIME_MS) {
-                        if (y > 0) listener.onRotateLeft() else listener.onRotateRight()
+                        if (y < 0) listener.onRotateLeft() else listener.onRotateRight()
                         lastRotateTime = currentTime
                     }
                 }
